@@ -1,0 +1,94 @@
+'This is the function for the google recaptcha
+
+
+Sub submit_click(sender As Object, e As EventArgs)
+
+	Dim rValidate As Boolean = IsGoogleCaptchaValid()
+
+	If rValidate = True Then
+
+		Dim mail As New MailMessage()
+		mail.From = New MailAddress("DONOTREPLY@PanamaCityLaw.net")
+		'mail.To.Add("elitepoolservice1@gmail.com")
+		'mail.To.Add("heather@aaronrich.com")
+		'mail.To.Add("info@bicpc.org")
+		mail.To.Add("office@cothranlaw.com")
+		'mail.CC.Add("")
+		'mail.BCC.Add("")
+		mail.BCC.Add("armwebforms@aaronrich.com")
+
+		mail.Subject = "NEW MESSAGE via PanamaCityLaw.net"
+		mail.IsBodyHtml = True
+		mail.Body = "" &
+		"<strong>Name: </strong>" & firstname.value & "&nbsp;" & lastname.value & "<br/ >" &
+		"<strong>Phone Number: </strong>" & phone.value & "<br/ >" &
+		"<strong>Email Address: </strong>" & email.value & "<br/ >" &
+		"<strong>Message: </strong>" & message.value
+
+		Dim smtp As New SmtpClient()
+
+		If Len(txtURL.text) > 1 Then
+			Response.Redirect("error.aspx")
+		End If
+
+		Try
+			smtp.Credentials = New NetworkCredential("PM-T-outbound-GkLjTyu9qeLbCsdUgWERJJ", "tjC0jlx3Pg8rD48wDl-2JKWsv3VF8HwL0BRH")
+			smtp.Port = 587
+			smtp.Host = "smtp.postmarkapp.com"
+			smtp.Send(mail)
+			Response.Redirect("thanks.aspx")
+		Catch ehttp As System.Web.HttpException
+			Response.Redirect("error.aspx")
+		End Try
+	Else
+		rAlert.Attributes.Add("style", "display: block;color:red;")
+	End If
+
+End Sub
+
+
+
+
+
+Private Function IsGoogleCaptchaValid() As Boolean
+	Dim recaptchaResponse As String = Request.Form("g-recaptcha-response")
+	Try
+		If Not String.IsNullOrEmpty(recaptchaResponse) Then
+			Dim request As Net.WebRequest = Net.WebRequest.Create("https://www.google.com/recaptcha/api/siteverify?secret=6Lc9pp0jAAAAAJVXmDpqAZsDWy98_880vlwDMeX8&response=" + recaptchaResponse)
+			request.Method = "POST"
+			request.ContentType = "application/json; charset=utf-8"
+			Dim postData As String = ""
+
+			'get a reference to the request-stream, and write the postData to it
+			Using s As IO.Stream = request.GetRequestStream()
+				Using sw As New IO.StreamWriter(s)
+					sw.Write(postData)
+				End Using
+			End Using
+			''get response-stream, and use a streamReader to read the content
+			Using s As IO.Stream = request.GetResponse().GetResponseStream()
+				Using sr As New IO.StreamReader(s)
+					'decode jsonData with javascript serializer
+					Dim jsonData = sr.ReadToEnd()
+					'message.value += jsonData
+					If jsonData.Contains("""success"": true") = True Then
+						Return True
+					End If
+				End Using
+			End Using
+		End If
+	Catch ex As Exception
+		message.value = ex.ToString()
+	End Try
+
+	'message.value = recaptchaResponse
+	Return False
+End Function
+
+<div class="col-md-12">
+									 <div class="g-recaptcha" data-sitekey="6Lc9pp0jAAAAAHgytzmvsY8lu5Edk27YtNrgYnaW"></div>
+									<span id="rAlert" role="alert" runat="server" style="display: none;">Please verify that you are not a robot.</span>
+									</div>
+                  
+                  
+                  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
