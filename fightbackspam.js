@@ -1,6 +1,6 @@
 
 
-<script>
+
 // We are allowing 0 urls or regular expressions that can be changed from this site. https://uibakery.io/regex-library/url
 
 
@@ -15,8 +15,8 @@
                 $('#submit').prop("disabled", false); // if no regular expression matches it will not disable the submit button 
             }
         });
-    </script>
-    <script>
+  
+  
     
     // This function targets the amount of characters on that are allowable on the contact form. 
     
@@ -27,12 +27,11 @@
                 return false;
             }
         });
-    </script>
-
-	<script>
+ 
+	
   // This will prevent the option to copy and paste into the field ID
   
         $('#message').bind('copy paste', function (e) {
             e.preventDefault();
         });
-    </script>
+
