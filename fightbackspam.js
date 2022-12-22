@@ -5,7 +5,7 @@
 
 
         var allowed = 0; //allowed times
-        var regex = /(http|https|ftp|www):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i; //match url
+        var regex = /https?:\/\/[\-A-Za-z0-9+&@#\/%?=~_|$!:,.;]*/g; //match urls
 
         $('#message').on('input', function () { // match the ID to the field on the form being used
             var textArea = $(this).val().match(regex); // search string
